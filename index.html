@@ -101,9 +101,24 @@ let list=activeCat==='all'?products:products.filter(p=>p.cat===activeCat);
 document.getElementById('products').innerHTML=list.map(p=>`<div class="bg-white rounded-[1.5rem] border overflow-hidden"><div class="h-44 bg-gray-100"><img src="${p.img}" class="w-full h-full object-cover"></div><div class="p-4"><h4 class="font-bold text-sm">${p.name}</h4><p class="text-[11px] text-gray-500">${p.seller} • ${p.city}</p><p class="text-[10px] text-gray-400 mt-1">Pay: ${(p.payments||[]).join(', ')}</p><div class="flex justify-between items-center mt-3"><span class="font-bold">Rs ${p.price}</span><button onclick="addToCart(${products.indexOf(p)})" class="bg-black text-white px-4 py-2 rounded-full text-xs">Add to Cart</button></div></div></div>`).join('');
 }
 function filterCat(c){activeCat=c; document.querySelectorAll('.filter-btn').forEach(b=>b.className=b.dataset.cat===c?'filter-btn bg-black text-white px-5 py-2 rounded-full text-sm':'filter-btn bg-white border px-5 py-2 rounded-full text-sm'); renderProducts();}
+const SUPABASE_URL = "https://drrgfsmzqwutkbjfuctc.supabase.co";
+const SUPABASE_KEY = "sb_publishable_nLYVeZ-dn3sKZQ2I2dON8w_mA3ykMlj";
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
 async function openAuth(){
-  await Clerk.load();
-  Clerk.openSignIn();
+  try {
+    await Clerk.load();
+    Clerk.openSignIn();
+    Clerk.addListener(async ({ user }) => {
+      if (user) {
+        const { error } = await supabaseClient.from('users').upsert({ 
+          id: user.id, 
+          email: user.primaryEmailAddress?.emailAddress 
+        });
+        if(!error) console.log("User saved to factory!");
+      }
+    });
+  } catch(e){ console.log(e); }
 }
 function closeAuth(){document.getElementById('authModal').classList.add('hidden');}
 function switchAuth(m){authMode=m; document.getElementById('loginTab').className=m==='login'?'flex-1 py-2 rounded-full bg-black text-white text-sm':'flex-1 py-2 rounded-full text-sm'; document.getElementById('signupTab').className=m==='signup'?'flex-1 py-2 rounded-full bg-black text-white text-sm':'flex-1 py-2 rounded-full text-sm'; ['nameField','shopField','cityField','phoneField','paymentField','roleField'].forEach(id=>document.getElementById(id).classList.toggle('hidden',m==='login'));}

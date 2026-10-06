@@ -105,22 +105,7 @@ function filterCat(c){activeCat=c; document.querySelectorAll('.filter-btn').forE
 const SUPABASE_URL = "https://drrgfsmzqwutkbjfuctc.supabase.co";
 const SUPABASE_KEY = "sb_publishable_nLYVeZ-dn3sKZQ2I2dON8w_mA3ykMlj";
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-async function openAuth(){
-  try {
-    await Clerk.load();
-    Clerk.openSignIn();
-    Clerk.addListener(async ({ user }) => {
-      if (user) {
-        const { error } = await supabaseClient.from('users').upsert({ 
-          id: user.id, 
-          email: user.primaryEmailAddress?.emailAddress 
-        });
-        if(!error) console.log("User saved to factory!");
-      }
-    });
-  } catch(e){ console.log(e); }
-}
+function openAuth(){document.getElementById('authModal').classList.remove('hidden');}
 function closeAuth(){document.getElementById('authModal').classList.add('hidden');}
 function switchAuth(m){authMode=m; document.getElementById('loginTab').className=m==='login'?'flex-1 py-2 rounded-full bg-black text-white text-sm':'flex-1 py-2 rounded-full text-sm'; document.getElementById('signupTab').className=m==='signup'?'flex-1 py-2 rounded-full bg-black text-white text-sm':'flex-1 py-2 rounded-full text-sm'; ['nameField','shopField','cityField','phoneField','paymentField','roleField'].forEach(id=>document.getElementById(id).classList.toggle('hidden',m==='login'));}
 function togglePayInputs(){let vals=[...document.querySelectorAll('.payCheck:checked')].map(c=>c.value); document.getElementById('jazzInput').classList.toggle('hidden',!vals.includes('JazzCash')); document.getElementById('easyInput').classList.toggle('hidden',!vals.includes('Easypaisa')); document.getElementById('bankInput').classList.toggle('hidden',!vals.includes('Bank Transfer'));}

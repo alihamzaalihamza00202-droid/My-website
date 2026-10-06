@@ -147,4 +147,13 @@ let details = cart[0]?.payDetails?.[pay] || cart[0]?.payDetails?.Bank || '';
 document.getElementById('sellerPayDetails').classList.remove('hidden');
 document.getElementById('sellerPayDetails').innerHTML=`<b>${pay} Details:</b><br>${details}<br><span class="text-[10px] text-gray-500">Seller: ${cart[0].seller} - ${cart[0].phone}</span>`;
 }
-function closeCart(){document.getElementById('cartModal
+function closeCart(){document.getElementById('cartModal').classList.add('hidden');}
+function checkout(){let total=cart.reduce((s,p)=>s+p.price,0);let pay=document.querySelector('input[name="pay"]:checked')?.value||'COD';let msg=`Salam! ScentHub.pk se order:%0A${cart.map(p=>`- ${p.name} Rs ${p.price}`).join('%0A')}%0ATotal: Rs ${total}%0APayment: ${pay}%0ASeller: ${cart[0].seller}`;window.open(`https://wa.me/${cart[0].phone}?text=${msg}`,'_blank');cart=[];closeCart();}
+function openHelp(){document.getElementById('helpModal').classList.remove('hidden');}
+function closeHelp(){document.getElementById('helpModal').classList.add('hidden');}
+function openSupport(){document.getElementById('supportModal').classList.remove('hidden');}
+function closeSupport(){document.getElementById('supportModal').classList.add('hidden');}
+updateVisibility();
+</script>
+</body>
+</html>

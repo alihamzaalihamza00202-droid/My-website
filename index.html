@@ -2,64 +2,43 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ScentHubPK - Pakistan's Trusted Perfume Marketplace</title>
+<title>ScentHub.pk</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
 <style>body{font-family:'Outfit',sans-serif}.playfair{font-family:'Playfair Display',serif}</style>
 </head>
 <body class="bg-[#fdfbf7]">
-
-<header class="sticky top-0 z-40 bg-white border-b">
-<div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-<div class="flex items-center gap-2"><div class="w-9 h-9 bg-black text-white rounded-full flex items-center justify-center font-bold">S</div><h1 class="playfair font-bold">ScentHub.pk</h1></div>
-<div class="flex gap-2 items-center">
-<button onclick="openHelp()" class="px-4 py-2 bg-gray-100 rounded-full text-sm">Help</button>
-<button onclick="openSupport()" class="px-4 py-2 bg-gray-100 rounded-full text-sm">Support</button>
-<span id="roleBadge" class="hidden text-[10px] bg-black text-white px-3 py-1 rounded-full"></span>
-<button id="adminBtn" class="hidden bg-red-600 text-white px-4 py-2 rounded-full text-sm font-bold">Admin <span id="pendingCount" class="bg-white text-red-600 px-1.5 rounded-full ml-1">0</span></button>
-<button id="authBtn" class="bg-black text-white px-5 py-2 rounded-full text-sm font-bold">Login / Signup</button>
-<button id="dashBtn" class="hidden bg-black text-white px-5 py-2 rounded-full text-sm">Seller</button>
-<button id="cartBtn" class="hidden relative w-10 h-10 border rounded-full"><i class="fa-solid fa-bag-shopping"></i><span id="cartCount" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center">0</span></button>
-<button id="logoutBtn" class="hidden w-9 h-9 bg-red-50 text-red-600 rounded-full"><i class="fa-solid fa-right-from-bracket"></i></button>
-</div>
-</div>
-</header>
+<header class="sticky top-0 z-40 bg-white border-b"><div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center"><div class="flex items-center gap-2"><div class="w-9 h-9 bg-black text-white rounded-full flex items-center justify-center font-bold">S</div><h1 class="playfair font-bold">ScentHub.pk</h1></div><div class="flex gap-2"><button onclick="openHelp()" class="px-4 py-2 bg-gray-100 rounded-full text-sm">Help</button><button onclick="openSupport()" class="px-4 py-2 bg-gray-100 rounded-full text-sm">Support</button><button id="authBtn" onclick="openAuth()" class="bg-black text-white px-5 py-2 rounded-full text-sm font-bold">Login / Signup</button><button id="dashBtn" onclick="openDashboard()" class="hidden bg-black text-white px-5 py-2 rounded-full text-sm">Seller Dashboard</button><button id="cartBtn" onclick="openCart()" class="hidden relative w-10 h-10 border rounded-full"><i class="fa-solid fa-bag-shopping"></i><span id="cartCount" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center">0</span></button></div></div></header>
 
 <div id="publicLanding" class="max-w-7xl mx-auto px-4 py-10">
 <div class="bg-black text-white rounded-[2rem] p-8 md:p-14">
 <h2 class="playfair text-4xl md:text-6xl">Pakistan's Trusted<br>Perfume Marketplace</h2>
-<p class="mt-6 text-white/60 max-w-xl text-[15px]">ScentHubPK Pakistan No.1 Perfume Marketplace - Buyer alag, Seller alag. 1000+ Happy Customers - 4.8 Star Rated - Har sale pe 15% owner ko.</p>
-<div class="mt-4 flex gap-3 text-[11px] text-white/40"><span><i class="fa-solid fa-star text-yellow-400"></i> 4.8 Rating</span><span><i class="fa-solid fa-truck"></i> Free Delivery</span><span><i class="fa-solid fa-shield"></i> 100% Original</span></div>
-<button id="bannerBtn" class="mt-8 bg-white text-black px-8 py-4 rounded-full font-bold">Login / Signup to Continue</button>
+<p class="mt-6 text-white/60 max-w-xl text-[15px]">Buyer alag, Seller alag. Buyer sirf kharidega, Seller bechega. Har sale pe 15% owner ko jayega.</p>
+<button onclick="openAuth()" class="mt-8 bg-white text-black px-8 py-4 rounded-full font-bold">Login / Signup to Continue</button>
 </div>
 </div>
 
 <div id="privateContent" class="hidden">
-<div class="max-w-7xl mx-auto px-4 py-6 flex gap-2 overflow-auto">
-<button onclick="filterCat('all')" data-cat="all" class="filter-btn bg-black text-white px-5 py-2 rounded-full text-sm">All</button>
-<button onclick="filterCat('men')" data-cat="men" class="filter-btn bg-white border px-5 py-2 rounded-full text-sm">Men</button>
-<button onclick="filterCat('women')" data-cat="women" class="filter-btn bg-white border px-5 py-2 rounded-full text-sm">Women</button>
-<button onclick="filterCat('arabic')" data-cat="arabic" class="filter-btn bg-white border px-5 py-2 rounded-full text-sm">Arabic</button>
-<button onclick="filterCat('attar')" data-cat="attar" class="filter-btn bg-white border px-5 py-2 rounded-full text-sm">Attar</button>
-</div>
-<div id="products" class="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-4 pb-20"></div>
+<div class="max-w-7xl mx-auto px-4 py-6 flex justify-between items-center"><div class="flex gap-2 overflow-auto"><button onclick="filterCat('all')" data-cat="all" class="filter-btn bg-black text-white px-5 py-2 rounded-full text-sm">All</button><button onclick="filterCat('men')" data-cat="men" class="filter-btn bg-white border px-5 py-2 rounded-full text-sm">Men</button><button onclick="filterCat('women')" data-cat="women" class="filter-btn bg-white border px-5 py-2 rounded-full text-sm">Women</button><button onclick="filterCat('arabic')" data-cat="arabic" class="filter-btn bg-white border px-5 py-2 rounded-full text-sm">Arabic</button><button onclick="filterCat('attar')" data-cat="attar" class="filter-btn bg-white border px-5 py-2 rounded-full text-sm">Attar</button></div><p id="roleBadge" class="text-xs bg-black text-white px-3 py-1 rounded-full"></p></div>
+<div id="products" class="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-4 pb-32"></div>
 </div>
 
-<!-- AUTH MODAL - PURANA WALA WORKING -->
 <div id="authModal" class="fixed inset-0 z-50 hidden bg-black/60 flex items-center justify-center p-4">
 <div class="bg-white rounded-[1.5rem] w-full max-w-md p-6 max-h-[92vh] overflow-auto">
 <div class="flex justify-between mb-5"><h3 class="playfair text-2xl font-bold">Account</h3><button onclick="closeAuth()"><i class="fa-solid fa-xmark"></i></button></div>
 <div class="flex bg-gray-100 rounded-full p-1 mb-5"><button id="loginTab" onclick="switchAuth('login')" class="flex-1 py-2 rounded-full bg-black text-white text-sm">Login</button><button id="signupTab" onclick="switchAuth('signup')" class="flex-1 py-2 rounded-full text-sm">Signup</button></div>
-<form id="authForm" class="space-y-3">
-<select id="roleField" class="w-full border rounded-full px-5 py-3 text-sm hidden"><option value="buyer">I am Buyer</option><option value="seller">I am Seller</option></select>
+<form id="authForm" onsubmit="handleAuth(event)" class="space-y-3">
+<select id="roleField" class="w-full border rounded-full px-5 py-3 text-sm hidden"><option value="buyer">I am Buyer - Sirf Kharidna Hai</option><option value="seller">I am Seller - Bechna Hai</option></select>
 <input id="nameField" placeholder="Full Name" class="w-full border rounded-full px-5 py-3 text-sm hidden">
-<input id="shopField" placeholder="Shop Name" class="w-full border rounded-full px-5 py-3 text-sm hidden">
+<input id="shopField" placeholder="Shop Name (Only for Seller)" class="w-full border rounded-full px-5 py-3 text-sm hidden">
 <input id="cityField" placeholder="City" class="w-full border rounded-full px-5 py-3 text-sm hidden">
 <input id="phoneField" placeholder="WhatsApp Number" class="w-full border rounded-full px-5 py-3 text-sm hidden">
 <div id="paymentField" class="hidden space-y-3">
-<label class="flex items-center gap-2 text-sm"><input type="checkbox" class="payCheck" value="JazzCash" checked onchange="togglePayInputs()"> JazzCash</label><input id="jazzInput" placeholder="JazzCash Number - Title" class="w-full border rounded-full px-4 py-2 text-sm">
-<label class="flex items-center gap-2 text-sm"><input type="checkbox" class="payCheck" value="Easypaisa" onchange="togglePayInputs()"> Easypaisa</label><input id="easyInput" placeholder="Easypaisa - Account Number - Title" class="hidden w-full border rounded-full px-4 py-2 text-sm">
+<p class="text-xs font-bold">Payment Methods + Details (For Seller Only):</p>
+<label class="flex items-center gap-2 text-sm"><input type="checkbox" class="payCheck" value="JazzCash" onchange="togglePayInputs()"> JazzCash</label><input id="jazzInput" placeholder="JazzCash Number / Title" class="hidden w-full border rounded-full px-4 py-2 text-sm">
+<label class="flex items-center gap-2 text-sm"><input type="checkbox" class="payCheck" value="Easypaisa" onchange="togglePayInputs()"> Easypaisa</label><input id="easyInput" placeholder="Easypaisa Number / Title" class="hidden w-full border rounded-full px-4 py-2 text-sm">
 <label class="flex items-center gap-2 text-sm"><input type="checkbox" class="payCheck" value="Bank Transfer" onchange="togglePayInputs()"> Bank Transfer</label><input id="bankInput" placeholder="Bank Name - Account Number - Title" class="hidden w-full border rounded-full px-4 py-2 text-sm">
 <label class="flex items-center gap-2 text-sm"><input type="checkbox" class="payCheck" value="COD" checked> COD</label>
 <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-3 text-[11px]">Seller Note: Har sale pe 15% commission <b>03340686649 - Syed Ali Hamza</b> ko dena hoga.</div>
@@ -71,89 +50,101 @@
 </div>
 </div>
 
-<!-- SELLER DASH -->
-<div id="dashModal" class="fixed inset-0 z-50 hidden bg-[#fdfbf7] overflow-auto"><div class="max-w-6xl mx-auto px-4 py-6"><div class="flex justify-between mb-6"><h2 class="playfair text-3xl font-bold">Seller Dashboard</h2><button onclick="closeDashboard()" class="w-10 h-10 bg-black text-white rounded-full"><i class="fa-solid fa-xmark"></i></button></div><div class="grid md:grid-cols-3 gap-4 mb-6"><div class="bg-white border rounded-2xl p-5"><p class="text-xs text-gray-500">Shop</p><h3 id="statShop" class="font-bold">-</h3></div><div class="bg-white border rounded-2xl p-5"><p class="text-xs text-gray-500">WhatsApp</p><h3 id="statPhone" class="font-bold">-</h3></div><div class="bg-white border rounded-2xl p-5"><p class="text-xs text-gray-500">Products</p><h3 id="statProd" class="text-2xl font-bold">0</h3><p id="statPending" class="text-[10px] text-orange-500 font-bold"></p><p class="text-[10px] text-red-600 font-bold">15% per sale -> 03340686649</p></div></div><div class="grid md:grid-cols-5 gap-6"><div class="md:col-span-2 bg-white rounded-[1.5rem] p-6 border h-fit"><h4 class="font-semibold mb-4">Add Perfume - Admin Approval</h4><form onsubmit="addProduct(event)" class="space-y-3"><input id="pName" required placeholder="Perfume Name" class="w-full border rounded-full px-4 py-3 text-sm"><div class="flex gap-2"><input id="pPrice" required type="number" placeholder="Price Rs" class="w-1/2 border rounded-full px-4 py-3 text-sm"><select id="pCat" class="w-1/2 border rounded-full px-4 py-3 text-sm"><option value="men">Men</option><option value="women">Women</option><option value="arabic">Arabic</option><option value="attar">Attar</option></select></div><input id="pDesc" placeholder="Description" class="w-full border rounded-full px-4 py-3 text-sm"><input id="pImg" placeholder="Image URL" class="w-full border rounded-full px-4 py-3 text-sm"><button class="w-full bg-black text-white rounded-full py-3 text-sm font-bold">Submit For Approval</button></form><button onclick="logout()" class="w-full mt-4 text-red-500 text-sm">Logout</button></div><div class="md:col-span-3"><h4 class="font-semibold mb-3">My Products</h4><div id="myProducts" class="grid grid-cols-2 gap-3"></div></div></div></div></div>
+<div id="dashModal" class="fixed inset-0 z-50 hidden bg-[#fdfbf7] overflow-auto"><div class="max-w-6xl mx-auto px-4 py-6"><div class="flex justify-between mb-6"><h2 class="playfair text-3xl font-bold">Seller Dashboard</h2><button onclick="closeDashboard()" class="w-10 h-10 bg-black text-white rounded-full"><i class="fa-solid fa-xmark"></i></button></div><div class="grid md:grid-cols-3 gap-4 mb-6"><div class="bg-white border rounded-2xl p-5"><p class="text-xs text-gray-500">Shop</p><h3 id="statShop" class="font-bold">-</h3><p id="statPay" class="text-[10px] text-gray-500 mt-1"></p></div><div class="bg-white border rounded-2xl p-5"><p class="text-xs text-gray-500">WhatsApp</p><h3 id="statPhone" class="font-bold">-</h3><p id="statPayDetail" class="text-[10px] text-gray-500 mt-1"></p></div><div class="bg-white border rounded-2xl p-5"><p class="text-xs text-gray-500">Products</p><h3 id="statProd" class="text-2xl font-bold">0</h3><p class="text-[10px] text-red-600 font-bold mt-1">15% per sale -> 03340686649</p></div></div><div class="grid md:grid-cols-5 gap-6"><div class="md:col-span-2 bg-white rounded-[1.5rem] p-6 border h-fit"><h4 class="font-semibold mb-4">Add Perfume</h4><form onsubmit="addProduct(event)" class="space-y-3"><input id="pName" required placeholder="Perfume Name" class="w-full border rounded-full px-4 py-3 text-sm"><div class="flex gap-2"><input id="pPrice" required type="number" placeholder="Price Rs" class="w-1/2 border rounded-full px-4 py-3 text-sm"><select id="pCat" class="w-1/2 border rounded-full px-4 py-3 text-sm"><option value="men">Men</option><option value="women">Women</option><option value="arabic">Arabic</option><option value="attar">Attar</option></select></div><input id="pDesc" placeholder="Description" class="w-full border rounded-full px-4 py-3 text-sm"><input id="pImg" placeholder="Image URL" class="w-full border rounded-full px-4 py-3 text-sm"><button class="w-full bg-black text-white rounded-full py-3 text-sm font-bold">Publish Product</button></form><button onclick="logout()" class="w-full mt-4 text-red-500 text-sm">Logout</button></div><div class="md:col-span-3"><h4 class="font-semibold mb-3">My Products</h4><div id="myProducts" class="grid grid-cols-2 gap-3"></div></div></div></div></div>
 
-<!-- ADMIN PANEL - FULL -->
-<div id="adminModal" class="fixed inset-0 z-[60] hidden bg-[#fdfbf7] overflow-auto"><div class="max-w-7xl mx-auto px-4 py-6"><div class="flex justify-between mb-6"><h2 class="playfair text-3xl font-bold">Admin Panel - Full Control</h2><button onclick="closeAdmin()" class="w-10 h-10 bg-black text-white rounded-full"><i class="fa-solid fa-xmark"></i></button></div><div class="grid md:grid-cols-4 gap-4 mb-6"><div class="bg-white border rounded-2xl p-5"><p class="text-xs">Sellers</p><h3 id="adminTotalSellers" class="text-2xl font-bold">0</h3></div><div class="bg-white border rounded-2xl p-5"><p class="text-xs">Buyers</p><h3 id="adminTotalBuyers" class="text-2xl font-bold">0</h3></div><div class="bg-orange-50 border rounded-2xl p-5"><p class="text-xs">Pending Requests</p><h3 id="adminPending" class="text-2xl font-bold text-orange-600">0</h3></div><div class="bg-green-50 border rounded-2xl p-5"><p class="text-xs">Total Commission 15%</p><h3 id="adminCommission" class="text-2xl font-bold">Rs 0</h3></div></div><div class="bg-white border rounded-2xl p-6 mb-6"><h4 class="font-bold mb-4">Admin Settings</h4><div class="grid md:grid-cols-2 gap-4"><div><label class="text-xs font-bold">Current Admin Email</label><input id="currentAdminEmail" disabled class="w-full border rounded-full px-4 py-2 text-sm bg-gray-100 mt-1"></div><div><label class="text-xs font-bold">New Admin Email (Bechni Ho To)</label><input id="newAdminEmail" placeholder="naya admin email" class="w-full border rounded-full px-4 py-2 text-sm mt-1"></div><div><label class="text-xs font-bold">Commission JazzCash</label><input id="setCommissionNum" value="03340686649 - Syed Ali Hamza" class="w-full border rounded-full px-4 py-2 text-sm mt-1"></div><div><label class="text-xs font-bold">Owner WhatsApp</label><input id="setOwnerPhone" value="923046761516" class="w-full border rounded-full px-4 py-2 text-sm mt-1"></div></div><button onclick="saveAdminSettings()" class="mt-4 bg-red-600 text-white px-6 py-2 rounded-full text-sm font-bold">Update Admin & Save</button><p class="text-[11px] text-gray-500 mt-2">Naya email save karoge to wo hi naya Admin ban jayega.</p></div><div class="grid md:grid-cols-2 gap-6"><div class="bg-white rounded-2xl border p-6"><h4 class="font-bold mb-4">Pending Products - Yahan Request Ayegi</h4><div id="adminPendingList" class="space-y-3"></div></div><div class="bg-white rounded-2xl border p-6"><h4 class="font-bold mb-4">All Users</h4><div id="adminUsersList" class="space-y-2 max-h-[500px] overflow-auto"></div></div></div><div class="mt-6 bg-white rounded-2xl border p-6"><h4 class="font-bold mb-4">All Approved Products</h4><div id="adminAllProducts" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div></div></div></div>
+<div id="cartModal" class="fixed inset-0 z-50 hidden bg-black/50"><div class="absolute right-0 top-0 h-full w-full max-w-md bg-white p-6 overflow-auto"><div class="flex justify-between mb-6"><h3 class="playfair text-xl font-bold">Buyer Checkout</h3><button onclick="closeCart()" class="w-9 h-9 border rounded-full"><i class="fa-solid fa-xmark"></i></button></div><div id="cartItems" class="space-y-3"></div><div class="mt-6 border-t pt-4"><p class="font-bold text-sm mb-2">Payment Method Select Karo:</p><div id="payOptions" class="space-y-2 mb-4"></div><div id="sellerPayDetails" class="bg-gray-50 rounded-2xl p-4 text-xs mb-4 hidden"></div><div class="flex justify-between font-bold mb-3"><span>Total</span><span id="cartTotal">Rs 0</span></div><button onclick="checkout()" class="w-full bg-green-600 text-white py-3 rounded-full text-sm font-bold">Confirm Order on WhatsApp</button></div></div></div>
 
-<!-- CART + BUYER LOGOUT FIX -->
-<div id="cartModal" class="fixed inset-0 z-50 hidden bg-black/50"><div class="absolute right-0 top-0 h-full w-full max-w-md bg-white p-6 overflow-auto"><div class="flex justify-between mb-6"><h3 class="playfair text-xl font-bold">Buyer Checkout</h3><button onclick="closeCart()" class="w-9 h-9 border rounded-full"><i class="fa-solid fa-xmark"></i></button></div><div id="cartItems" class="space-y-3"></div><div class="mt-6 border-t pt-4"><p class="font-bold text-sm mb-2">Payment Select Karo:</p><div id="payOptions" class="space-y-2 mb-4"></div><div id="sellerPayDetails" class="bg-gray-50 rounded-2xl p-4 text-xs mb-4 hidden"></div><div class="flex justify-between font-bold mb-3"><span>Total</span><span id="cartTotal">Rs 0</span></div><button onclick="checkout()" class="w-full bg-green-600 text-white py-3 rounded-full text-sm font-bold">Confirm Order on WhatsApp</button><button onclick="logout()" class="w-full mt-3 border border-red-200 text-red-600 py-2.5 rounded-full text-sm font-bold">Logout - Buyer / Seller Dono Ke Liye</button></div></div></div>
-
-<div id="helpModal" class="fixed inset-0 z-50 hidden bg-black/50 flex items-center justify-center p-4"><div class="bg-white rounded-[1.5rem] w-full max-w-lg p-6"><div class="flex justify-between mb-4"><h3 class="playfair font-bold text-xl">Help</h3><button onclick="closeHelp()"><i class="fa-solid fa-xmark"></i></button></div><p class="text-sm">Buyer = Sirf kharidega. Seller = Dashboard me product add karega to Admin approve karega. Har sale pe 15% commission 03340686649 pe.</p></div></div>
-<div id="supportModal" class="fixed inset-0 z-50 hidden bg-black/50 flex items-center justify-center p-4"><div class="bg-white rounded-[1.5rem] w-full max-w-md p-6"><div class="flex justify-between mb-4"><h3 class="playfair font-bold text-xl">Support</h3><button onclick="closeSupport()"><i class="fa-solid fa-xmark"></i></button></div><a href="mailto:alihamzaalihamza00202@gmail.com" class="block p-4 bg-gray-50 rounded-2xl mb-3 text-sm"><b>Email:</b> alihamzaalihamza00202@gmail.com</a><a href="https://wa.me/923046761516" class="block p-4 bg-green-50 rounded-2xl mb-2 text-sm"><b>WhatsApp:</b> 03046761516</a><div class="block p-4 bg-yellow-50 rounded-2xl text-sm"><b>Commission JazzCash:</b> 03340686649 - Syed Ali Hamza - 15%</div></div></div>
+<div id="helpModal" class="fixed inset-0 z-50 hidden bg-black/50 flex items-center justify-center p-4"><div class="bg-white rounded-[1.5rem] w-full max-w-lg p-6"><div class="flex justify-between mb-4"><h3 class="playfair font-bold text-xl">Help Center</h3><button onclick="closeHelp()"><i class="fa-solid fa-xmark"></i></button></div><p class="text-sm text-gray-700">Buyer = Sirf kharidega. Seller = Dashboard me product add karega. Har sale pe 15% commission 03340686649 pe.</p></div></div>
+<div id="supportModal" class="fixed inset-0 z-50 hidden bg-black/50 flex items-center justify-center p-4"><div class="bg-white rounded-[1.5rem] w-full max-w-md p-6"><div class="flex justify-between mb-4"><h3 class="playfair font-bold text-xl">Support</h3><button onclick="closeSupport()"><i class="fa-solid fa-xmark"></i></button></div><a href="mailto:alihamzaalihamza00202@gmail.com" class="block p-4 bg-gray-50 rounded-2xl mb-3 text-sm"><b>Email:</b> alihamzaalihamza00202@gmail.com</a><a href="https://wa.me/923046761516" target="_blank" class="block p-4 bg-green-50 rounded-2xl mb-2 text-sm"><b>WhatsApp:</b> 03046761516</a><div class="block p-4 bg-yellow-50 rounded-2xl text-sm"><b>Commission JazzCash:</b> 03340686649 - Syed Ali Hamza - 15%</div></div></div>
 
 <script>
-// SAFE SUPABASE - BILKUL FIXED - AB BUTTON KABHI BANNER NAHI BANEGA
-let supabaseClient = null;
-try{
-  if(typeof supabase!== 'undefined'){
-    const SUPABASE_URL = "https://drrgfsmzqwutkbjfuctc.supabase.co";
-    const SUPABASE_KEY = "sb_publishable_nLYVeZ-dn3sKZQ2I2dON8w_mA3ykMlj";
-    supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-  }
-}catch(e){ console.log("Local mode - Supabase optional"); }
-
 const OWNER_PHONE = "923046761516";
-let ADMIN_EMAILS = JSON.parse(localStorage.getItem('sh_admin_emails') || '["alihamzaalihamza00202@gmail.com"]');
+const SUPABASE_URL = "https://drrgfsmzqwutkbjfuctc.supabase.co";
+const SUPABASE_KEY = "sb_publishable_nLYVeZ-dn3sKZQ2I2dON8w_mA3ykMlj";
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 let currentUser = JSON.parse(localStorage.getItem('sh_current'))||null;
 let users = JSON.parse(localStorage.getItem('sh_users'))||[];
 let defaultProducts = [
-{name:"J. Janan Gold",price:2200,cat:"men",seller:"J. Fragrances",city:"Karachi",desc:"12 hours lasting",phone:OWNER_PHONE,payments:["COD","JazzCash"],payDetails:{JazzCash:"03340686649 - Syed Ali Hamza",COD:"Cash on Delivery"},img:"https://images.unsplash.com/photo-1594035910387-fea47794261f?w=400",status:"approved",id:101},
-{name:"Amber Oud Attar",price:1850,cat:"arabic",seller:"Saeed Ghani",city:"Lahore",desc:"12ml attar",phone:OWNER_PHONE,payments:["COD"],payDetails:{COD:"Cash on Delivery"},img:"https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?w=400",status:"approved",id:102}
+{name:"J. Janan Gold",price:2200,cat:"men",seller:"J. Fragrances",city:"Karachi",desc:"12 hours lasting",phone:OWNER_PHONE,payments:["COD","JazzCash"],payDetails:{JazzCash:"03340686649 - Syed Ali Hamza",COD:"Cash on Delivery"},img:"https://images.unsplash.com/photo-1594035910387-fea47794261f?w=400"},
+{name:"Amber Oud Attar",price:1850,cat:"arabic",seller:"Saeed Ghani",city:"Lahore",desc:"12ml attar",phone:OWNER_PHONE,payments:["COD"],payDetails:{COD:"Cash on Delivery"},img:"https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?w=400"}
 ];
 let products = JSON.parse(localStorage.getItem('sh_products')) || defaultProducts;
 let cart=[]; let activeCat='all'; let authMode='login';
-
-function save(){localStorage.setItem('sh_products',JSON.stringify(products)); localStorage.setItem('sh_users',JSON.stringify(users)); localStorage.setItem('sh_current',JSON.stringify(currentUser)); localStorage.setItem('sh_admin_emails',JSON.stringify(ADMIN_EMAILS));}
-
-// ALL BUTTONS FIXED WITH BOTH METHODS
-function openAuth(){document.getElementById('authModal').classList.remove('hidden');}
-function closeAuth(){document.getElementById('authModal').classList.add('hidden');}
-function openHelp(){document.getElementById('helpModal').classList.remove('hidden');}
-function closeHelp(){document.getElementById('helpModal').classList.add('hidden');}
-function openSupport(){document.getElementById('supportModal').classList.remove('hidden');}
-function closeSupport(){document.getElementById('supportModal').classList.add('hidden');}
-
-document.addEventListener('DOMContentLoaded', ()=>{
-  document.getElementById('authBtn').addEventListener('click', openAuth);
-  document.getElementById('bannerBtn').addEventListener('click', openAuth);
-});
-
+function save(){localStorage.setItem('sh_products',JSON.stringify(products)); localStorage.setItem('sh_users',JSON.stringify(users)); localStorage.setItem('sh_current',JSON.stringify(currentUser));}
 function updateVisibility(){
 if(currentUser){
 document.getElementById('publicLanding').classList.add('hidden');
 document.getElementById('privateContent').classList.remove('hidden');
 document.getElementById('authBtn').classList.add('hidden');
 document.getElementById('cartBtn').classList.remove('hidden');
-document.getElementById('logoutBtn').classList.remove('hidden');
-document.getElementById('roleBadge').classList.remove('hidden');
 document.getElementById('dashBtn').classList.toggle('hidden',currentUser.role!=='seller');
-let isAdmin = ADMIN_EMAILS.includes(currentUser.email);
-document.getElementById('adminBtn').classList.toggle('hidden',!isAdmin);
-document.getElementById('roleBadge').innerText = isAdmin? 'Admin Owner' : currentUser.role==='seller'? 'Seller' : 'Buyer - Can Logout';
+document.getElementById('roleBadge').innerText = currentUser.role==='seller'? 'Seller Mode - 15% Commission' : 'Buyer Mode';
 if(currentUser.role==='seller') document.getElementById('dashBtn').innerText = currentUser.shopName;
-renderProducts(); updatePendingBadge();
+renderProducts();
 }else{
 document.getElementById('publicLanding').classList.remove('hidden');
 document.getElementById('privateContent').classList.add('hidden');
 document.getElementById('authBtn').classList.remove('hidden');
 document.getElementById('dashBtn').classList.add('hidden');
 document.getElementById('cartBtn').classList.add('hidden');
-document.getElementById('logoutBtn').classList.add('hidden');
-document.getElementById('roleBadge').classList.add('hidden');
-document.getElementById('adminBtn').classList.add('hidden');
 }
 }
-function updatePendingBadge(){document.getElementById('pendingCount').innerText=products.filter(x=>x.status==='pending').length;}
 function renderProducts(){
-let approved=products.filter(p=>p.status==='approved');
-let list=activeCat==='all'?approved:approved.filter(p=>p.cat===activeCat);
-document.getElementById('products').innerHTML=list.map((p,i)=>{
-let realIdx = products.indexOf(p);
-return `<div class="bg-white rounded-[1.5rem] border overflow-hidden"><div class="h-44 bg-gray-100"><img src="${p.img}" class="w-full h-full object-cover"></div><div class="p-4"><h4 class="font-bold text-sm">${p.name}</h4><p class="text-[11px] text-gray-500">${p.seller} • ${p.city}</p><p class="text-[10px] text-green-600">Admin Approved</p><div class="flex justify-between items-center mt-3"><span class="font-bold">Rs ${p.price}</span><button onclick="addToCart(${realIdx})" class="bg-black text-white px-4 py-2 rounded-full text-xs">Add to Cart</button></div></div></div>`
-}).join('');
+let list=activeCat==='all'?products:products.filter(p=>p.cat===activeCat);
+document.getElementById('products').innerHTML=list.map((p,i)=>`<div class="bg-white rounded-[1.5rem] border overflow-hidden"><div class="h-44 bg-gray-100"><img src="${p.img}" class="w-full h-full object-cover"></div><div class="p-4"><h4 class="font-bold text-sm">${p.name}</h4><p class="text-[11px] text-gray-500">${p.seller} • ${p.city}</p><p class="text-[10px] text-gray-400 mt-1">Pay: ${(p.payments||[]).join(', ')}</p><div class="flex justify-between items-center mt-3"><span class="font-bold">Rs ${p.price}</span><button onclick="addToCart(${i})" class="bg-black text-white px-4 py-2 rounded-full text-xs">Add to Cart</button></div></div></div>`).join('');
 }
 function filterCat(c){activeCat=c; document.querySelectorAll('.filter-btn').forEach(b=>{b.className=b.dataset.cat===c?'filter-btn bg-black text-white px-5 py-2 rounded-full text-sm':'filter-btn bg-white border px-5 py-2 rounded-full text-sm'}); renderProducts();}
+function openAuth(){document.getElementById('authModal').classList.remove('hidden');}
+function closeAuth(){document.getElementById('authModal').classList.add('hidden');}
 function switchAuth(m){authMode=m; document.getElementById('loginTab').className=m==='login'?'flex-1 py-2 rounded-full bg-black text-white text-sm':'flex-1 py-2 rounded-full text-sm'; document.getElementById('signupTab').className=m==='signup'?'flex-1 py-2 rounded-full bg-black text-white text-sm':'flex-1 py-2 rounded-full text-sm'; ['nameField','shopField','cityField','phoneField','paymentField','roleField'].forEach(id=>document.getElementById(id).classList.toggle('hidden',m==='login'));}
-function togglePayInputs(){let vals=[...document.querySelectorAll('.payCheck:checked')].map(c=>c.value); document.getElementById('jazzInput').classList.toggle('hidden',!vals.includes('JazzCash')); do
+function togglePayInputs(){let vals=[...document.querySelectorAll('.payCheck:checked')].map(c=>c.value); document.getElementById('jazzInput').classList.toggle('hidden',!vals.includes('JazzCash')); document.getElementById('easyInput').classList.toggle('hidden',!vals.includes('Easypaisa')); document.getElementById('bankInput').classList.toggle('hidden',!vals.includes('Bank Transfer'));}
+async function handleAuth(e){
+e.preventDefault();
+let email=document.getElementById('emailField').value.toLowerCase().trim(); let pass=document.getElementById('passField').value;
+if(authMode==='signup'){
+let role=document.getElementById('roleField').value; let name=document.getElementById('nameField').value; let shop=document.getElementById('shopField').value||name; let city=document.getElementById('cityField').value; let phone=document.getElementById('phoneField').value.replace(/[^0-9]/g,''); if(phone.startsWith('0')) phone='92'+phone.substring(1);
+let pays=[...document.querySelectorAll('.payCheck:checked')].map(c=>c.value); let payDetails={}; if(pays.includes('JazzCash')) payDetails.JazzCash=document.getElementById('jazzInput').value; if(pays.includes('Easypaisa')) payDetails.Easypaisa=document.getElementById('easyInput').value; if(pays.includes('Bank Transfer')) payDetails.Bank=document.getElementById('bankInput').value; if(pays.includes('COD')) payDetails.COD='Cash on Delivery';
+if(users.find(u=>u.email===email)) return alert('Email exists');
+let u={id:Date.now(),name,email,pass,shopName:shop,city,phone,payments:pays,payDetails,role};
+users.push(u); currentUser=u; save();
+try{ await supabaseClient.from('users').upsert({email:email, role:role}); }catch(err){}
+closeAuth(); updateVisibility();
+}else{
+let u=users.find(u=>u.email===email&&u.pass===pass); if(!u) return alert('Wrong email or password'); currentUser=u; save(); closeAuth(); updateVisibility();
+}
+}
+function openDashboard(){if(!currentUser || currentUser.role!=='seller') return alert('Only Seller can open dashboard'); document.getElementById('dashModal').classList.remove('hidden'); renderDash();}
+function closeDashboard(){document.getElementById('dashModal').classList.add('hidden');}
+function renderDash(){
+if(!currentUser) return;
+document.getElementById('statShop').innerText=currentUser.shopName;
+document.getElementById('statPhone').innerText=currentUser.phone;
+document.getElementById('statPay').innerText=(currentUser.payments||[]).join(', ');
+document.getElementById('statPayDetail').innerText=JSON.stringify(currentUser.payDetails||{});
+let my=products.filter(p=>p.phone===currentUser.phone || p.seller===currentUser.shopName);
+document.getElementById('statProd').innerText=my.length;
+document.getElementById('myProducts').innerHTML=my.map((p,i)=>`<div class="bg-white border rounded-2xl p-3"><img src="${p.img}" class="h-24 w-full object-cover rounded-xl"><p class="font-bold text-sm mt-2">${p.name}</p><p class="text-xs">Rs ${p.price}</p><button onclick="deleteProd(${products.indexOf(p)})" class="text-red-500 text-xs mt-2">Delete</button></div>`).join('') || '<p class="text-xs text-gray-400">No products yet</p>';
+}
+function addProduct(e){
+e.preventDefault();
+let p={name:document.getElementById('pName').value, price:parseInt(document.getElementById('pPrice').value), cat:document.getElementById('pCat').value, desc:document.getElementById('pDesc').value, img:document.getElementById('pImg').value||'https://images.unsplash.com/photo-1594035910387-fea47794261f?w=400', seller:currentUser.shopName, city:currentUser.city, phone:currentUser.phone, payments:currentUser.payments, payDetails:currentUser.payDetails};
+products.push(p); save(); renderProducts(); renderDash(); e.target.reset(); alert('Product Published!');
+}
+function deleteProd(idx){if(confirm('Delete?')){products.splice(idx,1); save(); renderProducts(); renderDash();}}
+function logout(){currentUser=null; save(); location.reload();}
+function addToCart(idx){let p=products[idx]; cart.push(p); document.getElementById('cartCount').innerText=cart.length; openCart();}
+function openCart(){
+document.getElementById('cartModal').classList.remove('hidden');
+if(cart.length===0){document.getElementById('cartItems').innerHTML='<p class="text-sm text-gray-400">Cart empty</p>'; return;}
+let total=cart.reduce((s,p)=>s+p.price,0);
+document.getElementById('cartItems').innerHTML=cart.map((p,i)=>`<div class="flex justify-between text-sm border-b py-2"><span>${p.name}</span><span>Rs ${p.price}</span></div>`).join('');
+document.getElementById('cartTotal').innerText='Rs '+total;
+let allPays=[...new Set(cart.flatMap(p=>p.payments||['COD']))];
+document.getElementById('payOptions').innerHTML=allPays.map(pay=>`<label class="flex items-center gap-2 text-sm border rounded-full px-4 py-2"><input type="radio" name="pay" value="${pay}" onchange="showPayDetails('${pay}')"> ${pay}</label>`).join('');
+}
+function showPayDetails(pay){
+let details = cart[0]?.payDetails?.[pay] || cart[0]?.payDetails?.Bank || '';
+document.getElementById('sellerPayDetails').classList.remove('hidden');
+document.getElementById('sellerPayDetails').innerHTML=`<b>${pay} Details:</b><br>${details}<br><span class="text-[10px] text-gray-500">Seller: ${cart[0].seller} - ${cart[0].phone}</span>`;
+}
+function closeCart(){document.getElementById('cartModal

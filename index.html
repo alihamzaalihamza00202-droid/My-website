@@ -1,4 +1,29 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ScentHub.pk</title>
+<!DOCTYPE html><html lang="en"><head><!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-0298QYB0JL"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-0298QYB0JL');</script>
+<!-- Google tag End -->
+<!-- V9 ANTI-FLICKER - HEAD ME SAB SE PEHLE - ISKO KAHIN AUR MAT LAGANA -->
+<script>
+(function(){
+  // 1. Hero / Logo / Naam ko pehle se Chhupao - Jab tak naya Naam na aa jaye, purana dikhega hi nahi
+  var style = document.createElement('style');
+  style.id = 'sh-hide-until-ready';
+  style.textContent = '[data-site="name"],[data-site="title"],[data-site="tagline"],[data-site="logo"],[data-site="footer"]{visibility:hidden !important;}';
+  document.head.appendChild(style);
+
+  // 2. Phone me Save hua Naam turant lagao - Page banne se PEHLE
+  try{
+    var s = JSON.parse(localStorage.getItem('sh_site_settings') || '{}');
+    if(s.site_name || s.site_title){
+      // Browser Tab ka Naam bhi pehle se badal do
+      if(s.site_name) document.title = s.site_name + ' - ' + (s.site_title || '');
+      // Jab Body banegi to ye Function usko pakar lega
+      window.__sh_cached = s;
+    }
+  }catch(e){}
+})();
+</script>
+<!-- Yahan se tumhara baaki Head shuru hoga - Title, Meta, CSS --><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ScentHub.pk</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>const SUPABASE_URL="https://drrgfsmzqwutkbjfuctc.supabase.co";const SUPABASE_KEY="sb_publishable_nLYVeZ-dn3sKZQ2I2dON8w_mA3ykMlj";let supabaseClient=null;try{supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);}catch(e){}</script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -164,87 +189,94 @@ function logout(){currentUser=null;try{sessionStorage.removeItem('sh_session');}
 // SAFE GALLERY - Pic 1 Jagah Only - Button ko haath nahi lagayega
 if(!window._shGalleryPatched){window._shGalleryPatched=true;var _origDetail=window.openProductDetail;window.openProductDetail=function(idx){if(typeof _origDetail==='function'){try{_origDetail(idx);}catch(e){}}try{var p=products[idx];if(!p)return;var det=document.getElementById('productDetail');if(!det)return;var oldGal=document.getElementById('productGallery');if(oldGal)oldGal.remove();var firstImg=det.querySelector('img');if(firstImg&&firstImg.id!=='shMainImg'){firstImg.style.display='none';}var imgs=getProdImages(p);var gal=document.createElement('div');gal.id='productGallery';det.insertBefore(gal,det.firstChild);var gh='<div style="padding:6px"><img id="shMainImg" src="'+imgs[0]+'" style="width:100%;max-height:320px;object-fit:cover;border-radius:14px;display:block"></div>';gh+='<div style="display:flex;gap:8px;overflow-x:auto;padding:6px">';for(var j=0;j<imgs.length;j++){gh+='<img onclick="document.getElementById(\'shMainImg\').src=\''+imgs[j]+'\'" src="'+imgs[j]+'" style="width:70px;height:70px;object-fit:cover;border-radius:10px;border:2px solid #111;cursor:pointer;display:block">';}gh+='</div>';if(p.discountPercent)gh+='<div style="background:#dc2626;color:#fff;display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:800;margin:6px">OFF '+p.discountPercent+'% - Orig Rs '+Number(p.origPrice||p.price).toLocaleString()+'</div>';gal.innerHTML=gh;}catch(e){}};}
 (async function(){try{var _fast=loadLocalBackup('sh_site_settings');if(_fast){for(var _k in _fast){siteSettings[_k]=_fast[_k];}}}catch(e){}try{applySiteSettings();}catch(e){}try{updateVisibility();}catch(e){}try{renderCatBars();}catch(e){}try{renderProducts();setTimeout(addLandingOff,200);}catch(e){}try{renderFooterSocial();}catch(e){}try{renderNotify();}catch(e){}try{if(supabaseClient){var _r=await supabaseClient.from('site_settings').select('setting_value').eq('setting_key','main').maybeSingle();var _newSettings=null;if(_r&&_r.data&&_r.data.setting_value){try{_newSettings=JSON.parse(_r.data.setting_value);}catch(e){}}if(_newSettings){for(var _k2 in _newSettings){siteSettings[_k2]=_newSettings[_k2];}saveLocalBackup('sh_site_settings',siteSettings);applySiteSettings();renderProducts();setTimeout(addLandingOff,200);renderFooterSocial();renderNotify();}}}catch(e){}try{await dbLoadAll();}catch(e){}mergeLocalData();try{await loadSupabaseExtras();}catch(e){}try{var sess=sessionStorage.getItem('sh_session');if(sess){var tmp=JSON.parse(sess);var fresh=null;for(var i=0;i<users.length;i++){if(users[i].email.toLowerCase()===tmp.email.toLowerCase())fresh=users[i];}if(fresh)currentUser=fresh;else{sessionStorage.removeItem('sh_session');currentUser=null;}}}catch(e){}try{saveLocalBackup('sh_site_settings',siteSettings);}catch(e){}try{applySiteSettings();}catch(e){}try{updateVisibility();}catch(e){}try{renderCatBars();}catch(e){}try{renderProducts();setTimeout(addLandingOff,200);}catch(e){}try{renderFooterSocial();}catch(e){}try{renderNotify();}catch(e){}try{await bumpStat('views');}catch(e){}saveLocalBackup('sh_stats',window._dbStats);updateStatsUI();})();
-</script><!-- SCENTHUB V4 - APPEND ONLY, LIST NAHI HILEGI -->
+</script><!-- SCENTHUB V7+V8 COMBO FINAL - DONO LINE ADD HO GAYI -->
 <script>
 (function(){
-  if(window.__scenthubV4) return; window.__scenthubV4 = true;
+  if(window.__v78) return; window.__v78 = true;
 
-  // 1. Code wale 46 ko pehle jaisa hi rehne do, unko chherna nahi
-  // Hum List ko dobara nahi banayenge, sirf naya jorenge
+  /* ===== PART A - SITE NAME / HERO / LOGO ===== */
+  function applySettings(s){
+    if(!s) return;
+    document.querySelectorAll('[data-site="name"]').forEach(el=>{ if(s.site_name) el.textContent = s.site_name; });
+    document.querySelectorAll('[data-site="title"]').forEach(el=>{ if(s.site_title) el.textContent = s.site_title; });
+    document.querySelectorAll('[data-site="tagline"]').forEach(el=>{ if(s.site_tagline) el.textContent = s.site_tagline; });
+    if(s.logo_url) document.querySelectorAll('[data-site="logo"]').forEach(el=>{ el.src = s.logo_url; });
+    document.querySelectorAll('[data-site="footer"]').forEach(el=>{ if(s.footer_text) el.textContent = s.footer_text; });
+    document.querySelectorAll('[data-site="login_title"]').forEach(el=>{ if(s.login_title) el.textContent = s.login_title; });
+    document.querySelectorAll('[data-site="signup_title"]').forEach(el=>{ if(s.signup_title) el.textContent = s.signup_title; });
+    if(s.site_name) document.title = s.site_name + ' - ' + (s.site_title || '');
 
-  function findGrid(){
-    return document.getElementById('productGrid')
-      || document.getElementById('products')
-      || document.querySelector('.products-grid');
+    // 👈 YAHAN ADD KI HAI - 2nd WALI LINE - Naam lagte hi Chhupana band karo
+    var h = document.getElementById('sh-hide-until-ready');
+    if(h) h.remove();
+    document.querySelectorAll('[data-site]').forEach(el=>{ el.style.visibility='visible'; });
   }
 
-  // 2. Pehle se jo 46 dikh rahe hain unke Naam yaad kar lo - Taaki Duplicate na aaye
-  function getShownTitles(){
-    let grid = findGrid(); if(!grid) return new Set();
-    let s = new Set();
-    grid.querySelectorAll('h3').forEach(h=> s.add(h.innerText.trim()));
-    // Agar h3 nahi mila to Code wale products se lo
-    try{ if(window.products) window.products.forEach(p=> s.add((p.title||p.name||'').trim())); }catch(e){}
-    return s;
-  }
+  // Turant - LocalStorage se
+  try{ let c = localStorage.getItem('sh_site_settings'); if(c) applySettings(JSON.parse(c)); }catch(e){}
 
-  // 3. Sirf NAYA Product joro - Purane 46 ko haath mat lagao
-  function appendOnly(supaList){
-    let grid = findGrid(); if(!grid) return;
-    let shown = getShownTitles();
-    let html = '';
-    (supaList||[]).forEach(p=>{
-      let t = (p.title||p.name||'').trim();
-      if(!t || shown.has(t)) return; // Agar pehle se dikh raha hai to dobara mat joro - Duplicate khatam
-      shown.add(t);
-      html += `
-      <div class="product-card" style="background:#fff;border-radius:16px;overflow:hidden">
-        <img src="${p.image_url||p.image||''}" loading="lazy" style="width:100%;height:180px;object-fit:cover">
-        <div style="padding:12px">
-          <h3 style="font-size:14px">${t}</h3>
-          <p style="font-size:12px;color:#666">Seller: ${p.seller_name||p.seller||''} • ${p.category||''}</p>
-          <p style="font-weight:800">Rs ${(p.price||0).toLocaleString()}</p>
-          <button onclick="addToCart('${p.id||''}')" style="background:#000;color:#fff;border:0;width:100%;padding:10px;border-radius:10px">Add to Cart</button>
-        </div>
-      </div>`;
-    });
-    if(html){
-      // Neeche joro, Upar wale 46 ko hilao mat - innerHTML = mat karo, insertAdjacentHTML karo
-      grid.insertAdjacentHTML('beforeend', html);
-    }
-  }
+  // 👈 YAHAN ADD KI HAI - 1st WALI LINE - Head wale Cached Naam ko turant lagao
+  if(window.__sh_cached) applySettings(window.__sh_cached);
 
-  async function fetchSupa(){
-    const client = window.supabase || window.supabaseClient; if(!client) return [];
+  async function fetchSettings(){
+    const client = window.supabase || window.supabaseClient; if(!client) return;
     try{
-      const { data } = await client.from('products')
-        .select('id,title,name,price,image_url,image,category,seller_name,created_at,status')
-        .eq('status','approved')
-        .order('created_at',{ascending:false})
-        .limit(10);
-      return (data||[]).map(p=>({...p, title:p.title||p.name, image_url:p.image_url||p.image}));
-    }catch(e){ return []; }
-  }
-
-  async function start(){
-    // 2 Sec ruko taaki Code wale 46 pehle poore aa jayen, phir Supabase wale joro
-    setTimeout(async()=>{
-      let fresh = await fetchSupa();
-      appendOnly(fresh);
-    }, 2000);
-
-    // Realtime - Admin Approve kare to sirf usko neeche joro, List mat hilao
-    try{
-      const client = window.supabase || window.supabaseClient;
-      if(client) client.channel('scenthub-v4-append')
-        .on('postgres_changes',{event:'INSERT',schema:'public',table:'products'}, async()=>{
-          setTimeout(async()=>{ appendOnly(await fetchSupa()); },500);
-        }).subscribe();
+      const { data } = await client.from('site_settings').select('key,value');
+      if(!data) return;
+      let obj={}; data.forEach(r=> obj[r.key]=r.value);
+      localStorage.setItem('sh_site_settings', JSON.stringify(obj));
+      applySettings(obj);
     }catch(e){}
   }
+  setTimeout(fetchSettings, 500);
 
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', start);
-  else start();
+  /* ===== PART B - PRODUCT LIST - V7 - NO SHAKE ===== */
+  let grid = document.getElementById('productGrid') || document.getElementById('products') || document.querySelector('.products-grid');
+  if(grid) grid.style.visibility = 'hidden';
+  let lastIds = new Set(); let firstTime = true;
+  function renderOnce(list){
+    if(!grid) grid = document.getElementById('productGrid') || document.getElementById('products') || document.querySelector('.products-grid');
+    if(!grid) return;
+    if(firstTime){
+      firstTime = false; lastIds = new Set(list.map(p=>String(p.id)));
+      if(window.__originalRender){ try{ window.__originalRender(list); }catch(e){} }
+      if(grid.innerHTML.trim() === ''){
+        grid.innerHTML = list.map(p=>`<div class="product-card" data-pid="${p.id}"><img src="${p.image_url||p.image||''}" loading="lazy" style="width:100%;height:180px;object-fit:cover"><div style="padding:12px"><h3>${p.title||p.name||''}</h3><p>Rs ${(p.price||0).toLocaleString()}</p><button onclick="addToCart('${p.id}')">Add to Cart</button></div></div>`).join('');
+      }
+      grid.style.visibility = 'visible'; return;
+    }
+    let newIds = new Set(list.map(p=>String(p.id)));
+    [...grid.querySelectorAll('[data-pid]')].forEach(el=>{ if(!newIds.has(el.dataset.pid)) el.remove(); });
+    list.forEach(p=>{
+      if(!lastIds.has(String(p.id))){
+        let div=document.createElement('div'); div.className='product-card'; div.dataset.pid=p.id;
+        div.innerHTML = `<img src="${p.image_url||p.image||''}" loading="lazy" style="width:100%;height:180px;object-fit:cover"><div style="padding:12px"><h3>${p.title||p.name||''}</h3><p>Rs ${(p.price||0).toLocaleString()}</p><button onclick="addToCart('${p.id}')">Add to Cart</button></div>`;
+        grid.appendChild(div);
+      }
+    });
+    lastIds = newIds;
+  }
+  if(window.renderProducts && !window.__originalRender){
+    window.__originalRender = window.renderProducts;
+    window.renderProducts = function(){ return; };
+    window.displayProducts = window.renderProducts;
+  }
+  async function fetchFinal(){
+    const client = window.supabase || window.supabaseClient; if(!client) return;
+    try{
+      const { data } = await client.from('products').select('*').eq('status','approved').order('display_order',{ascending:true}).order('created_at',{ascending:true}).limit(100);
+      if(data && data.length) renderOnce(data);
+    }catch(e){}
+  }
+  try{
+    const client = window.supabase || window.supabaseClient;
+    if(client) client.channel('scenthub-v78')
+      .on('postgres_changes',{event:'*',schema:'public',table:'products'}, ()=> setTimeout(fetchFinal, 600))
+      .on('postgres_changes',{event:'*',schema:'public',table:'site_settings'}, ()=> setTimeout(fetchSettings, 500))
+      .subscribe();
+  }catch(e){}
+  setTimeout(fetchFinal, 300);
+  setTimeout(()=>{ if(grid) grid.style.visibility='visible'; }, 2000);
 })();
 </script>
 </body></html>

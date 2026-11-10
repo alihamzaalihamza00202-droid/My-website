@@ -164,7 +164,7 @@ async function approveEditReq(id){var r=null;for(var i=0;i<editReqs.length;i++){
 async function rejectEditReq(id){var r=null;for(var i=0;i<editReqs.length;i++){if(editReqs[i].id===id)r=editReqs[i];}if(!r)return;r.status='Rejected';await saveOneEditReq(r);showToast('Edit Rejected Ho Gaya');openAdmin();}
 function renderEditReqAdmin(){var el=document.getElementById('adminEditReqList');if(!el)return;var h='';for(var i=0;i<editReqs.length;i++){if(isHidden('edit',editReqs[i].id))continue;var q=editReqs[i];var done=q.status==='Approved'||q.status==='Rejected';h+='<div class="card" style="padding:10px"><p style="font-weight:800;font-size:11px">'+q.productName+' - '+q.status+'</p><p style="font-size:11px">Seller: '+q.sellerName+' ('+q.sellerEmail+')</p><p style="font-size:11px">Price: '+q.changes.price+' | Discount: '+q.changes.discountPercent+'% | Delivery: '+q.changes.deliveryCharge+' | Name: '+q.changes.name+' | Cat: '+q.changes.cat+'</p><div style="display:flex;gap:6px;margin-top:8px">'+(done?'':('<button onclick="approveEditReq(\''+q.id+'\')" style="background:#16a34a;color:#fff;border:none;padding:6px 12px;border-radius:999px;font-size:10px">Approve Edit</button><button onclick="rejectEditReq(\''+q.id+'\')" style="background:#fee2e2;color:#dc2626;border:none;padding:6px 12px;border-radius:999px;font-size:10px">Reject</button>'))+'<button onclick="hideOne(\'edit\',\''+q.id+'\')" style="background:#eee;border:none;padding:6px 12px;border-radius:999px;font-size:10px">Hide History</button></div></div>';}el.innerHTML=(h?'<button onclick="clearDoneEditReqs()" style="width:100%;background:#fee2e2;color:#dc2626;border:none;padding:10px;border-radius:999px;font-weight:800;margin-bottom:8px">Clear Edit History</button>':'')+h||'<p style="font-size:11px;color:#888">No edit requests</p>';}
 async function updateReturnStatus(id,st){var r=null;for(var i=0;i<returnsArr.length;i++){if(returnsArr[i].id===id)r=returnsArr[i];}if(!r)return;r.status=st;saveReturns();saveLocalBackup('sh_returns',returnsArr);showToast('Return Updated - '+st);openAdmin();if(currentUser&&!isAdminUser(currentUser))openReturnPage();}
-async function approveProduct(idx){var p=products[idx];if(!p)return;p.status='approved';p.verified=true;await saveOneProduct(p);showToast('Product Approved - Live Ho Gaya');renderProducts();setTimeout(addLandingOff,150);openAdmin();}
+async function approveProduct(idx){var p=products[idx];if(!p)return;p.status='approved';p.verified=true;await saveOneProduct(p);showToast('Product Approved - Live Ho Gaya');renderProducts();setTimeout(addLandingOff,1200);openAdmin();}
 async function toggleBlockUser(idx){users[idx].blocked=!users[idx].blocked;saveUsers();showToast(users[idx].blocked?'User Blocked':'User Unblocked');openAdmin();}
 async function deleteUser(idx){var u=users[idx];if(u.email.toLowerCase()===(siteSettings.ownerEmail||ADMIN_EMAIL).toLowerCase()){alert('Cannot delete owner - Transfer first');return;}if(!confirm('Delete user permanently?'))return;try{if(supabaseClient)await supabaseClient.from('users').delete().eq('email',u.email.toLowerCase());}catch(e){}users.splice(idx,1);saveUsers();showToast('User Deleted');openAdmin();}
 async function saveAllSettings(){var g=function(id){var e=document.getElementById(id);return e?e.value.trim():'';};if(g('setSiteName'))siteSettings.name=g('setSiteName');if(g('setWebsiteUrl'))siteSettings.websiteUrl=g('setWebsiteUrl');if(g('setHeroTitle'))siteSettings.heroTitle=g('setHeroTitle');if(g('setHeroDesc'))siteSettings.heroDesc=g('setHeroDesc');if(g('setFooter'))siteSettings.footer=g('setFooter');if(g('setCommission'))siteSettings.commission=parseFloat(g('setCommission'))||siteSettings.commission;if(g('setAdminWhatsApp'))siteSettings.adminWhatsApp=g('setAdminWhatsApp');if(g('setAccName'))siteSettings.accName=g('setAccName');if(g('setAccNumber'))siteSettings.accNumber=g('setAccNumber');if(g('setLogoWord'))siteSettings.logoWord=g('setLogoWord');if(document.getElementById('setLogoUrl'))siteSettings.logoUrl=g('setLogoUrl');if(document.getElementById('setHeroLogoUrl'))siteSettings.heroLogoUrl=g('setHeroLogoUrl');if(g('setThemeBg'))siteSettings.themeBg=g('setThemeBg');if(g('setThemePrimary'))siteSettings.themePrimary=g('setThemePrimary');if(g('setThemeGold'))siteSettings.themeGold=g('setThemeGold');if(g('setTopBarText'))siteSettings.topBarText=g('setTopBarText');if(g('setHeroBg'))siteSettings.heroBg=g('setHeroBg');if(!siteSettings.social)siteSettings.social={fb:'',ig:'',yt:'',wa:''};siteSettings.social.fb=g('setFb');siteSettings.social.ig=g('setIg');siteSettings.social.yt=g('setYt');siteSettings.social.wa=g('setWaLink');saveLocalBackup('sh_site_settings',siteSettings);applySiteSettings();saveSettings();document.getElementById('saveStatus').innerText='Settings Saved - Permanent - All Devices';showToast('Settings Saved');setTimeout(function(){document.getElementById('saveStatus').innerText='';},2500);}
@@ -189,12 +189,12 @@ function logout(){currentUser=null;try{sessionStorage.removeItem('sh_session');}
 // SAFE GALLERY - Pic 1 Jagah Only - Button ko haath nahi lagayega
 if(!window._shGalleryPatched){window._shGalleryPatched=true;var _origDetail=window.openProductDetail;window.openProductDetail=function(idx){if(typeof _origDetail==='function'){try{_origDetail(idx);}catch(e){}}try{var p=products[idx];if(!p)return;var det=document.getElementById('productDetail');if(!det)return;var oldGal=document.getElementById('productGallery');if(oldGal)oldGal.remove();var firstImg=det.querySelector('img');if(firstImg&&firstImg.id!=='shMainImg'){firstImg.style.display='none';}var imgs=getProdImages(p);var gal=document.createElement('div');gal.id='productGallery';det.insertBefore(gal,det.firstChild);var gh='<div style="padding:6px"><img id="shMainImg" src="'+imgs[0]+'" style="width:100%;max-height:320px;object-fit:cover;border-radius:14px;display:block"></div>';gh+='<div style="display:flex;gap:8px;overflow-x:auto;padding:6px">';for(var j=0;j<imgs.length;j++){gh+='<img onclick="document.getElementById(\'shMainImg\').src=\''+imgs[j]+'\'" src="'+imgs[j]+'" style="width:70px;height:70px;object-fit:cover;border-radius:10px;border:2px solid #111;cursor:pointer;display:block">';}gh+='</div>';if(p.discountPercent)gh+='<div style="background:#dc2626;color:#fff;display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:800;margin:6px">OFF '+p.discountPercent+'% - Orig Rs '+Number(p.origPrice||p.price).toLocaleString()+'</div>';gal.innerHTML=gh;}catch(e){}};}
 (async function(){try{var _fast=loadLocalBackup('sh_site_settings');if(_fast){for(var _k in _fast){siteSettings[_k]=_fast[_k];}}}catch(e){}try{applySiteSettings();}catch(e){}try{updateVisibility();}catch(e){}try{renderCatBars();}catch(e){}try{renderProducts();setTimeout(addLandingOff,200);}catch(e){}try{renderFooterSocial();}catch(e){}try{renderNotify();}catch(e){}try{if(supabaseClient){var _r=await supabaseClient.from('site_settings').select('setting_value').eq('setting_key','main').maybeSingle();var _newSettings=null;if(_r&&_r.data&&_r.data.setting_value){try{_newSettings=JSON.parse(_r.data.setting_value);}catch(e){}}if(_newSettings){for(var _k2 in _newSettings){siteSettings[_k2]=_newSettings[_k2];}saveLocalBackup('sh_site_settings',siteSettings);applySiteSettings();renderProducts();setTimeout(addLandingOff,200);renderFooterSocial();renderNotify();}}}catch(e){}try{await dbLoadAll();}catch(e){}mergeLocalData();try{await loadSupabaseExtras();}catch(e){}try{var sess=sessionStorage.getItem('sh_session');if(sess){var tmp=JSON.parse(sess);var fresh=null;for(var i=0;i<users.length;i++){if(users[i].email.toLowerCase()===tmp.email.toLowerCase())fresh=users[i];}if(fresh)currentUser=fresh;else{sessionStorage.removeItem('sh_session');currentUser=null;}}}catch(e){}try{saveLocalBackup('sh_site_settings',siteSettings);}catch(e){}try{applySiteSettings();}catch(e){}try{updateVisibility();}catch(e){}try{renderCatBars();}catch(e){}try{renderProducts();setTimeout(addLandingOff,200);}catch(e){}try{renderFooterSocial();}catch(e){}try{renderNotify();}catch(e){}try{await bumpStat('views');}catch(e){}saveLocalBackup('sh_stats',window._dbStats);updateStatsUI();})();
-</script><!-- SCENTHUB V7+V8 COMBO FINAL - DONO LINE ADD HO GAYI -->
+  </script><!-- SCENTHUB V7+V8 COMBO FINAL - FIXED - CATEGORY WORKING -->
 <script>
 (function(){
   if(window.__v78) return; window.__v78 = true;
 
-  /* ===== PART A - SITE NAME / HERO / LOGO ===== */
+  /* ===== PART A - SAME AS BEFORE ===== */
   function applySettings(s){
     if(!s) return;
     document.querySelectorAll('[data-site="name"]').forEach(el=>{ if(s.site_name) el.textContent = s.site_name; });
@@ -202,22 +202,12 @@ if(!window._shGalleryPatched){window._shGalleryPatched=true;var _origDetail=wind
     document.querySelectorAll('[data-site="tagline"]').forEach(el=>{ if(s.site_tagline) el.textContent = s.site_tagline; });
     if(s.logo_url) document.querySelectorAll('[data-site="logo"]').forEach(el=>{ el.src = s.logo_url; });
     document.querySelectorAll('[data-site="footer"]').forEach(el=>{ if(s.footer_text) el.textContent = s.footer_text; });
-    document.querySelectorAll('[data-site="login_title"]').forEach(el=>{ if(s.login_title) el.textContent = s.login_title; });
-    document.querySelectorAll('[data-site="signup_title"]').forEach(el=>{ if(s.signup_title) el.textContent = s.signup_title; });
-    if(s.site_name) document.title = s.site_name + ' - ' + (s.site_title || '');
-
-    // 👈 YAHAN ADD KI HAI - 2nd WALI LINE - Naam lagte hi Chhupana band karo
     var h = document.getElementById('sh-hide-until-ready');
     if(h) h.remove();
     document.querySelectorAll('[data-site]').forEach(el=>{ el.style.visibility='visible'; });
   }
-
-  // Turant - LocalStorage se
   try{ let c = localStorage.getItem('sh_site_settings'); if(c) applySettings(JSON.parse(c)); }catch(e){}
-
-  // 👈 YAHAN ADD KI HAI - 1st WALI LINE - Head wale Cached Naam ko turant lagao
   if(window.__sh_cached) applySettings(window.__sh_cached);
-
   async function fetchSettings(){
     const client = window.supabase || window.supabaseClient; if(!client) return;
     try{
@@ -230,53 +220,30 @@ if(!window._shGalleryPatched){window._shGalleryPatched=true;var _origDetail=wind
   }
   setTimeout(fetchSettings, 500);
 
-  /* ===== PART B - PRODUCT LIST - V7 - NO SHAKE ===== */
-  let grid = document.getElementById('productGrid') || document.getElementById('products') || document.querySelector('.products-grid');
-  if(grid) grid.style.visibility = 'hidden';
-  let lastIds = new Set(); let firstTime = true;
-  function renderOnce(list){
-    if(!grid) grid = document.getElementById('productGrid') || document.getElementById('products') || document.querySelector('.products-grid');
-    if(!grid) return;
-    if(firstTime){
-      firstTime = false; lastIds = new Set(list.map(p=>String(p.id)));
-      if(window.__originalRender){ try{ window.__originalRender(list); }catch(e){} }
-      if(grid.innerHTML.trim() === ''){
-        grid.innerHTML = list.map(p=>`<div class="product-card" data-pid="${p.id}"><img src="${p.image_url||p.image||''}" loading="lazy" style="width:100%;height:180px;object-fit:cover"><div style="padding:12px"><h3>${p.title||p.name||''}</h3><p>Rs ${(p.price||0).toLocaleString()}</p><button onclick="addToCart('${p.id}')">Add to Cart</button></div></div>`).join('');
-      }
-      grid.style.visibility = 'visible'; return;
-    }
-    let newIds = new Set(list.map(p=>String(p.id)));
-    [...grid.querySelectorAll('[data-pid]')].forEach(el=>{ if(!newIds.has(el.dataset.pid)) el.remove(); });
-    list.forEach(p=>{
-      if(!lastIds.has(String(p.id))){
-        let div=document.createElement('div'); div.className='product-card'; div.dataset.pid=p.id;
-        div.innerHTML = `<img src="${p.image_url||p.image||''}" loading="lazy" style="width:100%;height:180px;object-fit:cover"><div style="padding:12px"><h3>${p.title||p.name||''}</h3><p>Rs ${(p.price||0).toLocaleString()}</p><button onclick="addToCart('${p.id}')">Add to Cart</button></div>`;
-        grid.appendChild(div);
-      }
-    });
-    lastIds = newIds;
-  }
-  if(window.renderProducts && !window.__originalRender){
-    window.__originalRender = window.renderProducts;
-    window.renderProducts = function(){ return; };
-    window.displayProducts = window.renderProducts;
-  }
+  /* ===== PART B - FIXED - NO HIJACK, CATEGORY SAFE ===== */
   async function fetchFinal(){
     const client = window.supabase || window.supabaseClient; if(!client) return;
     try{
       const { data } = await client.from('products').select('*').eq('status','approved').order('display_order',{ascending:true}).order('created_at',{ascending:true}).limit(100);
-      if(data && data.length) renderOnce(data);
+      if(!data) return;
+      // Supabase wala Data Original List me daal do, Render Original Function hi karega
+      // Is se Category Filter khud hi sahi Category dikhaye ga
+      if(window.products !== undefined) window.products = data;
+      if(window.allProducts !== undefined) window.allProducts = data;
+      // Abhi jo Category selected hai, usi ko dobara Render karo
+      // Is se All pe All, Men pe Men, Women pe Women aayega
+      if(window.renderProducts) window.renderProducts();
+      else if(window.displayProducts) window.displayProducts();
     }catch(e){}
   }
   try{
     const client = window.supabase || window.supabaseClient;
-    if(client) client.channel('scenthub-v78')
+    if(client) client.channel('scenthub-v78-fixed')
       .on('postgres_changes',{event:'*',schema:'public',table:'products'}, ()=> setTimeout(fetchFinal, 600))
       .on('postgres_changes',{event:'*',schema:'public',table:'site_settings'}, ()=> setTimeout(fetchSettings, 500))
       .subscribe();
   }catch(e){}
   setTimeout(fetchFinal, 300);
-  setTimeout(()=>{ if(grid) grid.style.visibility='visible'; }, 2000);
 })();
 </script>
 </body></html>

@@ -164,139 +164,87 @@ function logout(){currentUser=null;try{sessionStorage.removeItem('sh_session');}
 // SAFE GALLERY - Pic 1 Jagah Only - Button ko haath nahi lagayega
 if(!window._shGalleryPatched){window._shGalleryPatched=true;var _origDetail=window.openProductDetail;window.openProductDetail=function(idx){if(typeof _origDetail==='function'){try{_origDetail(idx);}catch(e){}}try{var p=products[idx];if(!p)return;var det=document.getElementById('productDetail');if(!det)return;var oldGal=document.getElementById('productGallery');if(oldGal)oldGal.remove();var firstImg=det.querySelector('img');if(firstImg&&firstImg.id!=='shMainImg'){firstImg.style.display='none';}var imgs=getProdImages(p);var gal=document.createElement('div');gal.id='productGallery';det.insertBefore(gal,det.firstChild);var gh='<div style="padding:6px"><img id="shMainImg" src="'+imgs[0]+'" style="width:100%;max-height:320px;object-fit:cover;border-radius:14px;display:block"></div>';gh+='<div style="display:flex;gap:8px;overflow-x:auto;padding:6px">';for(var j=0;j<imgs.length;j++){gh+='<img onclick="document.getElementById(\'shMainImg\').src=\''+imgs[j]+'\'" src="'+imgs[j]+'" style="width:70px;height:70px;object-fit:cover;border-radius:10px;border:2px solid #111;cursor:pointer;display:block">';}gh+='</div>';if(p.discountPercent)gh+='<div style="background:#dc2626;color:#fff;display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:800;margin:6px">OFF '+p.discountPercent+'% - Orig Rs '+Number(p.origPrice||p.price).toLocaleString()+'</div>';gal.innerHTML=gh;}catch(e){}};}
 (async function(){try{var _fast=loadLocalBackup('sh_site_settings');if(_fast){for(var _k in _fast){siteSettings[_k]=_fast[_k];}}}catch(e){}try{applySiteSettings();}catch(e){}try{updateVisibility();}catch(e){}try{renderCatBars();}catch(e){}try{renderProducts();setTimeout(addLandingOff,200);}catch(e){}try{renderFooterSocial();}catch(e){}try{renderNotify();}catch(e){}try{if(supabaseClient){var _r=await supabaseClient.from('site_settings').select('setting_value').eq('setting_key','main').maybeSingle();var _newSettings=null;if(_r&&_r.data&&_r.data.setting_value){try{_newSettings=JSON.parse(_r.data.setting_value);}catch(e){}}if(_newSettings){for(var _k2 in _newSettings){siteSettings[_k2]=_newSettings[_k2];}saveLocalBackup('sh_site_settings',siteSettings);applySiteSettings();renderProducts();setTimeout(addLandingOff,200);renderFooterSocial();renderNotify();}}}catch(e){}try{await dbLoadAll();}catch(e){}mergeLocalData();try{await loadSupabaseExtras();}catch(e){}try{var sess=sessionStorage.getItem('sh_session');if(sess){var tmp=JSON.parse(sess);var fresh=null;for(var i=0;i<users.length;i++){if(users[i].email.toLowerCase()===tmp.email.toLowerCase())fresh=users[i];}if(fresh)currentUser=fresh;else{sessionStorage.removeItem('sh_session');currentUser=null;}}}catch(e){}try{saveLocalBackup('sh_site_settings',siteSettings);}catch(e){}try{applySiteSettings();}catch(e){}try{updateVisibility();}catch(e){}try{renderCatBars();}catch(e){}try{renderProducts();setTimeout(addLandingOff,200);}catch(e){}try{renderFooterSocial();}catch(e){}try{renderNotify();}catch(e){}try{await bumpStat('views');}catch(e){}saveLocalBackup('sh_stats',window._dbStats);updateStatsUI();})();
-</script><!-- SCENTHUB FAST LOAD FIX - Bhai isko </body> ke pehle paste karo, baaki code ko mat chhero -->
+</script><!-- SCENTHUB V4 - APPEND ONLY, LIST NAHI HILEGI -->
 <script>
 (function(){
-  // Agar ye Fix dobara lag gaya to dobara na chale
-  if(window.__scenthubFix) return; window.__scenthubFix = true;
+  if(window.__scenthubV4) return; window.__scenthubV4 = true;
 
-  // 1. Tumhare Grid ka ID dhoondo - jo bhi ho, ye khud dhoond lega
+  // 1. Code wale 46 ko pehle jaisa hi rehne do, unko chherna nahi
+  // Hum List ko dobara nahi banayenge, sirf naya jorenge
+
   function findGrid(){
     return document.getElementById('productGrid')
       || document.getElementById('products')
-      || document.getElementById('productList')
-      || document.querySelector('[data-products]')
       || document.querySelector('.products-grid');
   }
 
-  // 2. Pehle se jo Products dikh rahe hain (Code wale) unko pakdo - Unko delete nahi karna
-  let codeProducts = [];
-  try{
-    if(typeof products !== 'undefined' && Array.isArray(products)) codeProducts = products;
-    if(typeof allProducts !== 'undefined' && Array.isArray(allProducts)) codeProducts = allProducts;
-    if(window.products && Array.isArray(window.products)) codeProducts = window.products;
-  }catch(e){}
-
-  // 3. Cache - Jo ek baar load ho gaya wo dobara Supabase se nahi mangega, turant dikhega
-  const CACHE_KEY = 'scenthub_products_cache_v2';
-  const CACHE_TIME_KEY = 'scenthub_products_cache_time';
-  let lastIds = '';
-  let isFirstLoad = true;
-
-  function getCache(){
-    try{
-      let t = parseInt(localStorage.getItem(CACHE_TIME_KEY)||'0');
-      // Cache sirf 5 Minute ke liye - Isse Admin se Delete / Approve turant dikhega, purana nahi dikhega
-      if(Date.now() - t < 5*60*1000){
-        return JSON.parse(localStorage.getItem(CACHE_KEY)||'[]');
-      }
-    }catch(e){} return null;
-  }
-  function setCache(list){
-    try{ localStorage.setItem(CACHE_KEY, JSON.stringify(list)); localStorage.setItem(CACHE_TIME_KEY, String(Date.now())); }catch(e){}
+  // 2. Pehle se jo 46 dikh rahe hain unke Naam yaad kar lo - Taaki Duplicate na aaye
+  function getShownTitles(){
+    let grid = findGrid(); if(!grid) return new Set();
+    let s = new Set();
+    grid.querySelectorAll('h3').forEach(h=> s.add(h.innerText.trim()));
+    // Agar h3 nahi mila to Code wale products se lo
+    try{ if(window.products) window.products.forEach(p=> s.add((p.title||p.name||'').trim())); }catch(e){}
+    return s;
   }
 
-  // 4. 1 hi baar Render - Tarteeb kabhi nahi badlegi
-  function renderOnce(finalList){
-    const grid = findGrid(); if(!grid) return;
-    // Agar List same hai to dobara Render mat karo - Yahi hilne wala masla khatam karega
-    const ids = finalList.map(p=>p.id||p.title).join('|');
-    if(ids === lastIds && !isFirstLoad) return;
-    lastIds = ids; isFirstLoad = false;
-
-    // Agar tumhara purana render function hai to usi ko use karo, warna khud banao
-    if(typeof window.renderProducts === 'function' && window.renderProducts !== renderOnce){
-      try{ window.renderProducts(finalList); return; }catch(e){}
-    }
-    if(typeof window.displayProducts === 'function'){
-      try{ window.displayProducts(finalList); return; }catch(e){}
-    }
-    // Fallback - Agar koi function nahi mila to khud Card banao
-    grid.innerHTML = finalList.map(p=>`
+  // 3. Sirf NAYA Product joro - Purane 46 ko haath mat lagao
+  function appendOnly(supaList){
+    let grid = findGrid(); if(!grid) return;
+    let shown = getShownTitles();
+    let html = '';
+    (supaList||[]).forEach(p=>{
+      let t = (p.title||p.name||'').trim();
+      if(!t || shown.has(t)) return; // Agar pehle se dikh raha hai to dobara mat joro - Duplicate khatam
+      shown.add(t);
+      html += `
       <div class="product-card" style="background:#fff;border-radius:16px;overflow:hidden">
-        <img src="${p.image_url||p.image||p.img||''}" loading="lazy" style="width:100%;height:180px;object-fit:cover" onerror="this.style.display='none'">
+        <img src="${p.image_url||p.image||''}" loading="lazy" style="width:100%;height:180px;object-fit:cover">
         <div style="padding:12px">
-          <h3 style="font-size:14px;line-height:1.3">${p.title||p.name||''}</h3>
+          <h3 style="font-size:14px">${t}</h3>
           <p style="font-size:12px;color:#666">Seller: ${p.seller_name||p.seller||''} • ${p.category||''}</p>
           <p style="font-weight:800">Rs ${(p.price||0).toLocaleString()}</p>
-          <button onclick="addToCart('${p.id||''}')" style="background:#000;color:#fff;border:0;width:100%;padding:10px;border-radius:10px;cursor:pointer">Add to Cart</button>
+          <button onclick="addToCart('${p.id||''}')" style="background:#000;color:#fff;border:0;width:100%;padding:10px;border-radius:10px">Add to Cart</button>
         </div>
-      </div>`).join('');
+      </div>`;
+    });
+    if(html){
+      // Neeche joro, Upar wale 46 ko hilao mat - innerHTML = mat karo, insertAdjacentHTML karo
+      grid.insertAdjacentHTML('beforeend', html);
+    }
   }
 
-  // 5. Supabase se FAST Load - Sirf zaroori cheez mangao, saara Data mat mangao
-  async function fetchFast(){
-    if(!window.supabase && !window.supabaseClient) return null;
-    const client = window.supabase || window.supabaseClient;
+  async function fetchSupa(){
+    const client = window.supabase || window.supabaseClient; if(!client) return [];
     try{
-      const { data, error } = await client
-        .from('products')
-        .select('id,title,name,price,image_url,image,category,seller_name,seller,created_at,status')
+      const { data } = await client.from('products')
+        .select('id,title,name,price,image_url,image,category,seller_name,created_at,status')
         .eq('status','approved')
-        .order('created_at', {ascending:false})
-        .limit(24);
-      if(error) return null;
-      return (data||[]).map(p=>({ ...p, title: p.title||p.name, image_url: p.image_url||p.image }));
-    }catch(e){ return null; }
+        .order('created_at',{ascending:false})
+        .limit(10);
+      return (data||[]).map(p=>({...p, title:p.title||p.name, image_url:p.image_url||p.image}));
+    }catch(e){ return []; }
   }
 
-  // 6. Merge - Code wale + Supabase wale, Duplicate hatao, Tarteeb Fix
-  function mergeAndRender(supaList){
-    let combined = [];
-    let seen = new Set();
-    // Pehle Supabase wale - Naya pehle
-    (supaList||[]).forEach(p=>{ if(!seen.has(p.title)){ seen.add(p.title); combined.push(p); } });
-    // Phir Code wale - Jo Supabase me nahi hai wo hi aayega, jab Admin se Delete karoge to ye bhi nahi aayega
-    codeProducts.forEach(p=>{ let t = p.title||p.name; if(t && !seen.has(t)){ seen.add(t); combined.push(p); } });
-    // Tarteeb hamesha ek jaisi - created_at se, Code wale neeche
-    combined.sort((a,b)=> new Date(b.created_at||'2026-01-01') - new Date(a.created_at||'2026-01-01'));
-    renderOnce(combined);
-    if(supaList && supaList.length) setCache(supaList);
-  }
-
-  // 7. START - Page khulte hi
   async function start(){
-    // Pehle Cache dikhao - 0 Sec me Landing khulegi
-    let cached = getCache();
-    if(cached && cached.length){ mergeAndRender(cached); }
-    // Phir Background me Supabase se naya Data lao, agar same hai to Screen nahi hilegi
-    let fresh = await fetchFast();
-    if(fresh){ mergeAndRender(fresh); }
-    else if(!cached){ mergeAndRender([]); }
+    // 2 Sec ruko taaki Code wale 46 pehle poore aa jayen, phir Supabase wale joro
+    setTimeout(async()=>{
+      let fresh = await fetchSupa();
+      appendOnly(fresh);
+    }, 2000);
 
-    // 8. REALTIME - Admin jab Approve / Delete karega to Landing khud update ho jayegi, Refresh nahi karna parega, 5 Sec ka wait nahi hoga
+    // Realtime - Admin Approve kare to sirf usko neeche joro, List mat hilao
     try{
       const client = window.supabase || window.supabaseClient;
-      if(client){
-        client.channel('scenthub-products-live')
-          .on('postgres_changes', {event:'*', schema:'public', table:'products'}, async ()=>{
-            // Thora sa wait taaki Supabase me save ho jaye
-            setTimeout(async ()=>{
-              let f2 = await fetchFast();
-              if(f2) mergeAndRender(f2);
-              // Agar Admin ne Delete kiya to Cache bhi saaf karo
-              if(!f2) { localStorage.removeItem(CACHE_KEY); }
-            }, 400);
-          }).subscribe();
-      }
+      if(client) client.channel('scenthub-v4-append')
+        .on('postgres_changes',{event:'INSERT',schema:'public',table:'products'}, async()=>{
+          setTimeout(async()=>{ appendOnly(await fetchSupa()); },500);
+        }).subscribe();
     }catch(e){}
   }
 
-  // Page Load hote hi chalao, purane load ko rokne ke liye 300ms wait
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ()=>setTimeout(start, 200));
-  else setTimeout(start, 200);
-
-  window.scenthubRefresh = async function(){ localStorage.removeItem(CACHE_KEY); lastIds=''; let f = await fetchFast(); if(f) mergeAndRender(f); };
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', start);
+  else start();
 })();
 </script>
 </body></html>

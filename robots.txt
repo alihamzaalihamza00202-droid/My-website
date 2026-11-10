@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /seller
+Disallow: /login
+Disallow: /checkout
+
+Sitemap: https://scenthubpk.netlify.app/sitemap.xml

@@ -191,140 +191,29 @@ function logout(){currentUser=null;try{sessionStorage.removeItem('sh_session');}
 // SAFE GALLERY - Pic 1 Jagah Only - Button ko haath nahi lagayega
 if(!window._shGalleryPatched){window._shGalleryPatched=true;var _origDetail=window.openProductDetail;window.openProductDetail=function(idx){if(typeof _origDetail==='function'){try{_origDetail(idx);}catch(e){}}try{var p=products[idx];if(!p)return;var det=document.getElementById('productDetail');if(!det)return;var oldGal=document.getElementById('productGallery');if(oldGal)oldGal.remove();var firstImg=det.querySelector('img');if(firstImg&&firstImg.id!=='shMainImg'){firstImg.style.display='none';}var imgs=getProdImages(p);var gal=document.createElement('div');gal.id='productGallery';det.insertBefore(gal,det.firstChild);var gh='<div style="padding:6px"><img id="shMainImg" src="'+imgs[0]+'" style="width:100%;max-height:320px;object-fit:cover;border-radius:14px;display:block"></div>';gh+='<div style="display:flex;gap:8px;overflow-x:auto;padding:6px">';for(var j=0;j<imgs.length;j++){gh+='<img onclick="document.getElementById(\'shMainImg\').src=\''+imgs[j]+'\'" src="'+imgs[j]+'" style="width:70px;height:70px;object-fit:cover;border-radius:10px;border:2px solid #111;cursor:pointer;display:block">';}gh+='</div>';if(p.discountPercent)gh+='<div style="background:#dc2626;color:#fff;display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:800;margin:6px">OFF '+p.discountPercent+'% - Orig Rs '+Number(p.origPrice||p.price).toLocaleString()+'</div>';gal.innerHTML=gh;}catch(e){}};}
 (async function(){try{var _fast=loadLocalBackup('sh_site_settings');if(_fast){for(var _k in _fast){siteSettings[_k]=_fast[_k];}}}catch(e){}try{applySiteSettings();}catch(e){}try{updateVisibility();}catch(e){}try{renderCatBars();}catch(e){}try{renderProducts();setTimeout(addLandingOff,200);}catch(e){}try{renderFooterSocial();}catch(e){}try{renderNotify();}catch(e){}try{if(supabaseClient){var _r=await supabaseClient.from('site_settings').select('setting_value').eq('setting_key','main').maybeSingle();var _newSettings=null;if(_r&&_r.data&&_r.data.setting_value){try{_newSettings=JSON.parse(_r.data.setting_value);}catch(e){}}if(_newSettings){for(var _k2 in _newSettings){siteSettings[_k2]=_newSettings[_k2];}saveLocalBackup('sh_site_settings',siteSettings);applySiteSettings();renderProducts();setTimeout(addLandingOff,200);renderFooterSocial();renderNotify();}}}catch(e){}try{await dbLoadAll();}catch(e){}mergeLocalData();try{await loadSupabaseExtras();}catch(e){}try{var sess=sessionStorage.getItem('sh_session');if(sess){var tmp=JSON.parse(sess);var fresh=null;for(var i=0;i<users.length;i++){if(users[i].email.toLowerCase()===tmp.email.toLowerCase())fresh=users[i];}if(fresh)currentUser=fresh;else{sessionStorage.removeItem('sh_session');currentUser=null;}}}catch(e){}try{saveLocalBackup('sh_site_settings',siteSettings);}catch(e){}try{applySiteSettings();}catch(e){}try{updateVisibility();}catch(e){}try{renderCatBars();}catch(e){}try{renderProducts();setTimeout(addLandingOff,200);}catch(e){}try{renderFooterSocial();}catch(e){}try{renderNotify();}catch(e){}try{await bumpStat('views');}catch(e){}saveLocalBackup('sh_stats',window._dbStats);updateStatsUI();})();
-</script><!-- SCENTHUB V11 - FINAL FIX - V10 KI JAGAH YE LAGAO - CATEGORY KO HAATH NAHI LAGAYEGA -->
+</script><!-- SIRF REALTIME - TURANT - KOI TIMER NAHI -->
 <script>
 (function(){
-  if(window.__v11) return; window.__v11 = true;
+  if(window.__only_realtime) return; window.__only_realtime = true;
 
-  /* ===== PART A - SITE NAME / HERO - Waisa Hi ===== */
-  function applySettings(s){
-    if(!s) return;
-    document.querySelectorAll('[data-site="name"]').forEach(el=>{ if(s.site_name) el.textContent = s.site_name; });
-    document.querySelectorAll('[data-site="title"]').forEach(el=>{ if(s.site_title) el.textContent = s.site_title; });
-    document.querySelectorAll('[data-site="tagline"]').forEach(el=>{ if(s.site_tagline) el.textContent = s.site_tagline; });
-    if(s.logo_url) document.querySelectorAll('[data-site="logo"]').forEach(el=>{ el.src = s.logo_url; });
-    document.querySelectorAll('[data-site="footer"]').forEach(el=>{ if(s.footer_text) el.textContent = s.footer_text; });
-    if(s.site_name) document.title = s.site_name + ' - ' + (s.site_title || '');
-    var h = document.getElementById('sh-hide-until-ready'); if(h) h.remove();
-    document.querySelectorAll('[data-site]').forEach(el=>{ el.style.visibility='visible'; });
-  }
-  try{ let c = localStorage.getItem('sh_site_settings'); if(c) applySettings(JSON.parse(c)); }catch(e){}
-  if(window.__sh_cached) applySettings(window.__sh_cached);
-  async function fetchSettings(){
-    const client = window.supabase || window.supabaseClient; if(!client) return;
-    try{
-      const { data } = await client.from('site_settings').select('key,value');
-      if(!data) return;
-      let obj={}; data.forEach(r=> obj[r.key]=r.value);
-      localStorage.setItem('sh_site_settings', JSON.stringify(obj));
-      applySettings(obj);
-    }catch(e){}
-  }
-  fetchSettings();
-
-  /* ===== PART B - SIRF LIST FIX KARO, RENDER ASLI WALA HI CHALEGA ===== */
-  let grid = document.getElementById('productGrid') || document.getElementById('products') || document.querySelector('.products-grid');
-  // Pehle Grid Chhupao Taake 46 Wali Purani List Nazar Hi Na Aaye
-  if(grid) grid.style.visibility = 'hidden';
-
-  let correctList = [];
-  let firstReady = false;
-
-  // Asli Website Ka Render Pakro - Usay Band Mat Karo, Sirf Sahi List Do
-  let origRender = window.renderProducts || window.displayProducts || null;
-
-  // Product Ka Sahi Shape - Saare Field Rakh Lo Taake Asli Card Sahi Bane
-  function normalize(p){
-    let d = p.data || p.items || {};
-    if(typeof d === 'string'){ try{ d = JSON.parse(d); }catch(e){ d = {}; } }
-    // Dono Jagah Se Sab Kuch Mila Do - p Ka Bhi, d Ka Bhi
-    let out = Object.assign({}, d, p);
-    out.id = String(p.id);
-    out.name = d.name || p.title || p.name || d.title || '';
-    out.title = out.name;
-    out.price = Number(d.price || p.price || 0);
-    out.image_url = d.image_url || d.image || p.image_url || p.image || '';
-    out.image = out.image_url;
-    // Category - Sab Jagah Se Dhoondo - men / women / arabic / attar / soap / cosmetics / beauty / mobile...
-    let cat = d.category || d.subcategory || d.type || p.category || '';
-    // Agar Category Seller Line Me Hai Jaise "J. Official • men" To Wahan Se Bhi Nikalo
-    if(!cat && d.seller){ let parts = String(d.seller).split('•'); if(parts[1]) cat = parts[1].trim(); }
-    out.category = String(cat || 'All').trim();
-    out.category_lower = out.category.toLowerCase();
-    out.seller = d.seller || d.seller_name || p.seller || '';
-    out.seller_name = out.seller;
-    out.created_at = p.created_at || d.created_at || '';
-    return out;
+  function refreshNow(){
+    if(typeof window.fetchProducts === 'function'){ try{ window.fetchProducts(); return; }catch(e){} }
+    if(typeof window.loadProducts === 'function'){ try{ window.loadProducts(); return; }catch(e){} }
+    if(typeof window.getProducts === 'function'){ try{ window.getProducts(); return; }catch(e){} }
+    // Agar Asli Function Ka Naam In Teeno Me Se Koi Nahi Hai, To Page Khud Dobara Load Mat Karo
+    // Bas Cache Saaf Kar Do, Agli Baar Khud Hi Nayi List Aaye Gi
+    try{ localStorage.removeItem('products_cache'); localStorage.removeItem('sh_products'); }catch(e){}
   }
 
-  function showCorrectList(){
-    if(!grid) grid = document.getElementById('productGrid') || document.getElementById('products') || document.querySelector('.products-grid');
-    if(!grid) return;
-    // Agar Asli Render Hai To Usi Se Dikhao - Tarteeb Wahi Rahe Gi, Category Bhi Usi Ki Chalegi
-    if(origRender){
-      try{ origRender(correctList); }catch(e){}
-    } else if(window.renderProducts){
-      try{ window.renderProducts(correctList); }catch(e){}
-    }
-    // Agar Asli Render Ne Grid Nahi Bhara To Dobara Check Karo - Par Apna Card Mat Banao
-    grid.style.visibility = 'visible';
-    firstReady = true;
-  }
-
-  // Asli Render Ko Wrap Karo - Agar Wo Purani 46 Wali List Lekar Aaya To Usay Rok Ke Sahi 51 Wali De Do
-  function wrapRender(){
-    let fn = window.renderProducts || window.displayProducts;
-    if(fn && !fn.__v11){
-      let original = fn;
-      let wrapped = function(list){
-        // Agar Humari Sahi List Taiyar Hai Aur Aane Wali List Chhoti Hai (46) To Sahi List Do
-        if(firstReady && correctList.length > 0 && Array.isArray(list) && list.length < correctList.length){
-          return original(correctList);
-        }
-        // Agar Aane Wali List Hi Sahi Hai To Usi Ko Yaad Kar Lo
-        if(Array.isArray(list) && list.length >= correctList.length && list.length > 0){
-          // Category Ka Kaam Asli Code Ka Hai, Hum Sirf List Yaad Kar Rahe Hain
-          correctList = list.map(normalize);
-        }
-        return original.apply(this, arguments);
-      };
-      wrapped.__v11 = true;
-      window.renderProducts = wrapped;
-      window.displayProducts = wrapped;
-      origRender = original;
-    }
-  }
-  // Har Thodi Der Me Check Karo Ke Asli Render Aa Gaya Ya Nahi - Par Timer Se List Mat Hilao
-  let wrapTry = setInterval(()=>{ wrapRender(); if(origRender) clearInterval(wrapTry); }, 100);
-  setTimeout(()=> clearInterval(wrapTry), 3000);
-
-  // ===== EK HI FETCH - SAHI QUERY - KOI TIMER NAHI =====
-  async function fetchCorrect(){
-    const client = window.supabase || window.supabaseClient; if(!client) return;
-    try{
-      const { data, error } = await client.from('products').select('*').eq('is_approved', true).eq('is_deleted', false).order('created_at', {ascending:true}).limit(200);
-      if(error || !data) return;
-      correctList = data.map(normalize);
-      // Ab Jo List Bani Hai Wahi Final Hai - 51 Wali - Isi Ko Dikhao
-      // Agar Asli Code Ne Category Select Ki Hui Hai To Usay Dobara Lagao - Category Function Ko Bulake
-      let activeCat = document.querySelector('.category-btn.active, .filter-btn.active, [data-category].active');
-      showCorrectList();
-      // Agar Koi Category Active Hai To Uska Click Dobara Mat Karo, Sirf Asli Filter Ko Bolo Ke Is List Pe Filter Kare
-      if(activeCat && window.filterProducts) { try{ window.filterProducts(activeCat.dataset.category || activeCat.textContent.trim()); }catch(e){} }
-    }catch(e){}
-  }
-
-  // ===== REALTIME - Naya Aaye To List Me Add, Delete Ho To Nikal - Poori List Dobara Mat Banao =====
   try{
     const client = window.supabase || window.supabaseClient;
-    if(client) client.channel('scenthub-v11')
-      .on('postgres_changes',{event:'*',schema:'public',table:'products'}, ()=>{ fetchCorrect(); })
-      .on('postgres_changes',{event:'*',schema:'public',table:'site_settings'}, ()=> fetchSettings())
+    if(!client) return;
+    client.channel('scenthub-realtime-fast')
+      .on('postgres_changes', {event:'INSERT', schema:'public', table:'products'}, ()=> refreshNow())
+      .on('postgres_changes', {event:'UPDATE', schema:'public', table:'products'}, ()=> refreshNow())
+      .on('postgres_changes', {event:'DELETE', schema:'public', table:'products'}, ()=> refreshNow())
       .subscribe();
   }catch(e){}
-
-  // Turant Fetch - Koi Wait Nahi
-  fetchCorrect();
 })();
 </script>
 </body></html>
